@@ -1,0 +1,31 @@
+body{
+  background-color: #6e08ff !important;
+}
+
+#word{
+  background: #fffdef;
+  border: 5px solid #c3bfff;
+  margin-top: 20%;
+  text-align: center;
+  overflow: auto;
+}
+
+#word ul{
+  list-style: none;
+  padding:0;
+  margin:0;
+  display: inline-block;
+
+}
+
+#word ul li{
+  display: block;
+  float: left;
+  width:2em;
+  height:3em;
+  border-bottom:5px solid #ccc;
+  margin-right:1em;
+  font-size: 2em;
+  font-weight: bold;
+  line-height: 3em;
+}
