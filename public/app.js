@@ -18,6 +18,8 @@ new Vue({
         type: "turn",
         data: this.letter
       }));
+
+      this.letter = "";
     }
   },
 

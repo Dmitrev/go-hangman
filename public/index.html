@@ -30,7 +30,7 @@
             <div class="col-md-12">
               <h1>Guess</h1>
               <div class="form-group">
-                <input v-model="letter" type="text" class="form-control" maxlength="1" pattern="[A-Za-z]{1}" placeholder="Type letter">
+                <input v-model="letter" v-on:keyup.enter="send" type="text" class="form-control" maxlength="1" pattern="[A-Za-z]{1}" placeholder="Type letter">
               </div>
               <div class="form-group">
                 <button @click="send" class="btn btn-lg btn-success">Send</button>
