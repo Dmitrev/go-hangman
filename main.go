@@ -32,11 +32,14 @@ var words wordsSlice
 var upgrader websocket.Upgrader
 var clients = make(map[*websocket.Conn]bool)
 var broadcast = make(chan Message) // broadcast channel
+var lives int
 
 
 func main() {
 	// Set seeder for rand
 	rand.Seed(time.Now().Unix())
+
+
 
 	loadWords()
 	generateNewWord()
@@ -64,8 +67,10 @@ func main() {
 func sendUpdate(ws *websocket.Conn) {
 	ws.WriteJSON(&struct {
 		Word []string `json:"word"`
+		Lives int `json:"lives"`
 	}{
 		word.guessed,
+		lives,
 	})
 }
 
@@ -76,6 +81,8 @@ func updateAll() {
 }
 
 func generateNewWord() {
+	// Reset lives
+	lives = 10
 
 	newWord := words.Words[rand.Intn(len(words.Words))]
 	newWordSlice := strings.Split(newWord, "")
@@ -155,9 +162,21 @@ func handleLetters() {
 			word.guessed[li] = letter
 		}
 
+		if len(letterIndexes) == 0 {
+			lives--
+		}
+
 		// send update
 		for client := range clients {
 			sendUpdate(client)
+		}
+
+		// Check if lost
+		if lives == 0 {
+			fmt.Printf("Game is over")
+			generateNewWord()
+			updateAll()
+			return
 		}
 
 		// Check if game is over

@@ -4,6 +4,7 @@ new Vue({
   data: {
       ws: null, // websocket
       word:[],
+      lives: 0,
       letter: null
   },
 
@@ -28,7 +29,9 @@ new Vue({
     this.ws = new WebSocket('ws://' + window.location.host + '/ws');
 
     this.ws.onmessage = function(event){
-      self.word = JSON.parse(event.data).word;
+      var json = JSON.parse(event.data)
+      self.word = json.word;
+      self.lives = json.lives;
     };
 
   }
