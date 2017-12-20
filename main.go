@@ -24,6 +24,8 @@ var clients = make(map[*websocket.Conn]bool)
 var broadcast = make(chan Message) // broadcast channel
 
 func main() {
+	// Start the go routine here because server call is blocking
+	go handleLetters()
 	// Create simple file serverinfo info wa to serve static files
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
@@ -41,7 +43,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("ListenAndServe: %v", err)
 	}
-	go handleLetters()
 
 	log.Printf("Started server on port 8000")
 
@@ -90,27 +91,37 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleLetters() {
+
+	fmt.Println("handleLETTERS")
 	for {
 		msg := <-broadcast
 
 		fmt.Printf("Check letter %v", msg.Data)
+		letter := msg.Data
 		// Check if the letter is valid
 
-		// var letterIndexes []int
-		//
-		// // Check on which index this letter is
-		// for i, l := range word.correct {
-		// 	if letter == l {
-		// 		letterIndexes = append(letterIndexes, i)
-		// 	}
-		// }
-		//
-		// // Add to the guessed slice
-		// for _, li := range letterIndexes {
-		// 	word.guessed[li] = letter
-		// }
+		var letterIndexes []int
+
+		// Check on which index this letter is
+		for i, l := range word.correct {
+			if letter == l {
+				letterIndexes = append(letterIndexes, i)
+			}
+		}
+
+		// Add to the guessed slice
+		for _, li := range letterIndexes {
+			word.guessed[li] = letter
+		}
 
 		// send update
+		for client := range clients {
+			client.WriteJSON(&struct {
+				Word []string `json:"word"`
+			}{
+				word.guessed,
+			})
+		}
 
 	}
 }
