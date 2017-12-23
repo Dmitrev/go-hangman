@@ -125,14 +125,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		fmt.Println("Check")
+		if msg.Type == "turn" {
+			broadcast <- msg
+		}
 
-		broadcast <- msg
+
 	}
 
 	fmt.Println("user disconnected")
 
 }
+
 
 func handleLetters() {
 
